@@ -23,6 +23,7 @@ services:
       - 5000:5000
     volumes:
       - "./backend/:/app/"
+    restart: always
 #  nginx-combine:
 #    image: nginx
 #    restart: always
