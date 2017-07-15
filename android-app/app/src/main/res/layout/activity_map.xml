@@ -7,6 +7,12 @@
     android:layout_height="match_parent"
     tools:context="tech.allegro.allegrotechdays.activity.MapActivity">
 
+    <fragment
+        android:id="@+id/map_fragment_map"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:name="com.google.android.gms.maps.SupportMapFragment"/>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/map_fab_add_report"
         android:layout_width="@dimen/fab_add_report_size"
