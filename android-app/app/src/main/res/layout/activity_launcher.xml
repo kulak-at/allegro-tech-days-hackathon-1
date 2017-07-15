@@ -7,13 +7,12 @@
     android:layout_height="match_parent"
     tools:context="tech.allegro.allegrotechdays.LauncherActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="@dimen/fab_add_report_size"
+        android:layout_height="@dimen/fab_add_report_size"
+        android:layout_margin="@dimen/fab_add_report_margin"
+        android:src="@drawable/ic_add_location"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent"/>
+        app:layout_constraintRight_toRightOf="parent"/>
 
 </android.support.constraint.ConstraintLayout>
