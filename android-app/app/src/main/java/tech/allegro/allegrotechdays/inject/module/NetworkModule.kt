@@ -10,6 +10,7 @@ import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import tech.allegro.allegrotechdays.BuildConfig
 import tech.allegro.allegrotechdays.inject.scope.ApplicationScope
+import tech.allegro.allegrotechdays.network.TechDaysApi
 
 @ApplicationScope
 @Module
@@ -37,4 +38,8 @@ class NetworkModule {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build()
     }
+
+    @ApplicationScope
+    @Provides
+    fun provideRetrofitApi(retrofit: Retrofit) = retrofit.create(TechDaysApi::class.java)
 }
