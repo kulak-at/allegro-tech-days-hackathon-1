@@ -3,10 +3,10 @@ package tech.allegro.allegrotechdays
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
 
-class LauncherActivity : AppCompatActivity() {
+class MapActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_launcher)
+        setContentView(R.layout.activity_map)
     }
 }
