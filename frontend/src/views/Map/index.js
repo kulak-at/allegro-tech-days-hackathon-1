@@ -16,19 +16,36 @@ class Map extends React.Component {
   }
 
   render () {
-    return <div className='map' ref='map'></div>
+    return <div className='map' ref='map' />
   }
 
   componentWillReceiveProps (newProps) {
     if (this.heatmap) {
       this.heatmap.set('radius', newProps.heatmapRadius) // FIXME:
+      if (this.props.showBikes !== newProps.showBikes) {
+        this.heatmap.setMap(newProps.showBikes ? this.map : null)
+      }
     }
+
+    if (this.reports && this.props.showReports !== newProps.showReports) {
+      this.reports.forEach(report => {
+        console.log('report', report)
+        report.setMap(newProps.showReports ? this.map : null)
+      })
+    }
+
+    if (this.alerts && this.props.showAccidents !== newProps.showAccidents) {
+      this.alerts.forEach(alert => {
+        alert.setMap(newProps.showAccidents ? this.map : null)
+      })
+    }
+
   }
 
   mapPoint(pointFile) {
     return (point) => {
       console.log(point)
-      const marker = new google.maps.Marker({
+      return new google.maps.Marker({
         position: {
           lat: point.location.coordinates[0],
           lng: point.location.coordinates[1]
@@ -48,6 +65,7 @@ class Map extends React.Component {
     })
 
     this.heatmap.setMap(this.map)
+    this.heatmap.set('radius', this.props.heatmapRadius)
   }
 
   componentDidMount () {
@@ -62,9 +80,16 @@ class Map extends React.Component {
 
     DataService.getUserReports()
     .map(this.mapPoint(userReport))
+    .then(points => {
+      console.log('P', points)
+      this.reports = points
+    })
 
     DataService.getAlerts()
     .map(this.mapPoint(explosion))
+    .then(points => {
+      this.alerts = points
+    })
 
     DataService.getBikeData()
     .then(this.makeHeatmap)
