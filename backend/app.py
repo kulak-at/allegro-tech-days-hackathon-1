@@ -5,7 +5,7 @@ app = Flask(__name__)
 from pymongo import MongoClient
 client = MongoClient('mongodb://mongo:27017').bike_database
 userReportCollection = client.user_report
-
+bikeCoordCollection = client.coords
 
 
 
@@ -23,10 +23,15 @@ def addUserReport():
 # get all the documents from the collection
 
 @app.route('/user-report', methods=['GET'])
-def getDocs():
+def getReports():
     # reports = [1,2,3]
     reports = [report for report in userReportCollection.find()]
     return json.dumps(reports, default=json_util.default)
+
+@app.route('/bike-coords', methods=['GET'])
+def getBikeCoords():
+    coords = [coord for coord in bikeCoordCollection.find()]
+    return json.dumps(coords, default=json_util.default)
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')
