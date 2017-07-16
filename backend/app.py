@@ -4,7 +4,7 @@ import json
 from bson import json_util
 app = Flask(__name__)
 from pymongo import MongoClient
-client = MongoClient('mongodb://mongo:27017').test_database
+client = MongoClient('mongodb://mongo:27017').bike_database
 userReportCollection = client.user_report
 
 
