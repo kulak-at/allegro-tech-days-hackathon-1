@@ -29,6 +29,14 @@
         android:layout_alignParentEnd="true"
         android:src="@drawable/ic_add_location"/>
 
+    <View
+        android:id="@+id/map_bottom_view"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white"
+        android:visibility="invisible"/>
+
     <FrameLayout
         android:id="@+id/map_fragment_holder"
         android:layout_width="match_parent"

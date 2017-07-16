@@ -1,11 +1,13 @@
-from flask import Flask, request
+from flask import Flask, abort, request, jsonify
 from datetime import datetime
 import json
+import sys
 from bson import json_util
 app = Flask(__name__)
-from pymongo import MongoClient
+from pymongo import MongoClient, GEOSPHERE
 from dateutil import parser
 client = MongoClient('mongodb://mongo:27017').bike_database
+client.coords.create_index([("location", GEOSPHERE)])
 userReportCollection = client.user_report
 bikeCoordCollection = client.coords
 accidentsCollection = client.accidents
@@ -48,7 +50,18 @@ def getLatest():
 
 @app.route('/bike-coords', methods=['GET'])
 def getBikeCoords():
-    coords = [coord for coord in bikeCoordCollection.find()]
+    params = request.args.to_dict()
+    lat = float(params.get('lat'))
+    lng = float(params.get('lng'))
+    rad = float(params.get('radius'))
+
+    query = {'location': {'$nearSphere': {'$geometry': {'type': 'Point', 'coordinates': [lng, lat]}, '$maxDistance': rad}}}
+
+    coords = []
+    if lat is None or lng is None or rad is None:
+        coords = [coord for coord in bikeCoordCollection.find()]
+    else:
+        coords = [coord for coord in bikeCoordCollection.find(query)]
     return json.dumps(coords, default=json_util.default)
 
 @app.route('/accidents',methods=['GET'])
@@ -59,4 +72,3 @@ def getAccidents():
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')
-
