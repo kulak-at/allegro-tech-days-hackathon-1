@@ -9,5 +9,5 @@ import tech.allegro.allegrotechdays.model.UserReport
 interface TechDaysApi {
 
     @POST("/user-report")
-    fun getUserRepos(@Body report: UserReport): Observable<ResponseBody>
+    fun sendUserReport(@Body report: UserReport): Observable<ResponseBody>
 }

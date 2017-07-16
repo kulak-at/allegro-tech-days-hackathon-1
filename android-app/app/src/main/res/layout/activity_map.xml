@@ -20,14 +20,33 @@
         android:layout_centerInParent="true"
         android:src="@drawable/ic_location_marker"/>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/map_fab_add_report"
+    <RelativeLayout
         android:layout_width="@dimen/fab_add_report_size"
         android:layout_height="@dimen/fab_add_report_size"
         android:layout_margin="@dimen/fab_add_report_margin"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:src="@drawable/ic_add_location"/>
+        android:elevation="10dp">
+
+        <android.support.design.widget.FloatingActionButton
+            android:id="@+id/map_fab_add_report"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:elevation="50dp"
+            android:src="@drawable/ic_add_location"/>
+
+        <ProgressBar
+            android:id="@+id/map_fab_progress_bar"
+            android:layout_width="@dimen/fab_add_report_size"
+            android:layout_height="@dimen/fab_add_report_size"
+            android:padding="8dp"
+            android:layout_centerInParent="true"
+            android:indeterminateTint="@android:color/white"
+            android:indeterminate="true"
+            android:elevation="100dp"
+            android:visibility="invisible"/>
+
+    </RelativeLayout>
 
     <LinearLayout
         android:id="@+id/map_bottom_view"
@@ -81,10 +100,5 @@
             android:hint="@string/report_description_hint"/>
 
     </LinearLayout>
-
-    <FrameLayout
-        android:id="@+id/map_fragment_holder"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
 
 </RelativeLayout>
