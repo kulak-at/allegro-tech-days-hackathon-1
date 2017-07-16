@@ -13,6 +13,13 @@
         android:layout_height="match_parent"
         android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
+    <ImageView
+        android:id="@+id/map_location_marker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@drawable/ic_location_marker"/>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/map_fab_add_report"
         android:layout_width="@dimen/fab_add_report_size"
