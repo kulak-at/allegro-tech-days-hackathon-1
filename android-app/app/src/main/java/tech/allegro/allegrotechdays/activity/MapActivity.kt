@@ -120,7 +120,9 @@ class MapActivity : InjectableBaseActivity<ApplicationComponent>(), OnMapReadyCa
 
                 if (enter) {
                     isReportPanelShowing = true
+                    addReportButton.setImageDrawable(resources.getDrawable(R.drawable.ic_check))
                 } else {
+                    addReportButton.setImageDrawable(resources.getDrawable(R.drawable.ic_add_location))
                     bottomView.visibility = View.INVISIBLE
                     isReportPanelShowing = false
                 }
