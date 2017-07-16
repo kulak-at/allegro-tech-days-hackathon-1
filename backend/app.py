@@ -1,13 +1,12 @@
-from flask import Flask, abort, request, jsonify
+from flask import Flask, request
 from datetime import datetime
 import json
 from bson import json_util
 app = Flask(__name__)
 from pymongo import MongoClient
+from dateutil import parser
 client = MongoClient('mongodb://mongo:27017').bike_database
 userReportCollection = client.user_report
-
-
 
 
 @app.route('/')
@@ -37,6 +36,13 @@ def getDocs():
     reports = [report for report in userReportCollection.find()]
     return json.dumps(reports, default=json_util.default)
 
+@app.route('/new-user-report', methods=['GET'])
+def getLatest():
+    date = request.args.get('since')
+    dt = parser.parse(date)
+    # date1 = datetime(int(date[:3])0, int(date[5]), int(date[5:7]), int(date[7]), int(date[8:10]), int(date[10:12]))
+    latest_reports = [reps for reps in userReportCollection.find({'createdAt': {'$gt': dt}})]
+    return json.dumps(latest_reports, default=json_util.default)
 
 
 if __name__ == '__main__':
