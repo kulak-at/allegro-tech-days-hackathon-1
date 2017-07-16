@@ -41,5 +41,7 @@ class NetworkModule {
 
     @ApplicationScope
     @Provides
-    fun provideRetrofitApi(retrofit: Retrofit) = retrofit.create(TechDaysApi::class.java)
+    fun provideRetrofitApi(retrofit: Retrofit): TechDaysApi {
+        return retrofit.create(TechDaysApi::class.java)
+    }
 }
