@@ -52,10 +52,17 @@ class Map extends React.Component {
       })
     }
 
+    if (this.props.showBikeRoads !== newProps.showBikeRoads) {
+      this.bikeLayer.setMap(newProps.showBikeRoads ? this.map : null)
+    }
+
   }
 
   // clusterData (data) {
-  //   data = data.map(d => ({lng: d.location.coordinates[0], lat: d.location.coordinates[1]}))
+  //   data = data.map(d => (new google.maps.Marker({
+  //     position: {lng: d.location.coordinates[0], lat: d.location.coordinates[1]},
+  //     icon: explosion
+  //   })))
   //   const markerCluster = new MarkerCluster(this.map, data,
   //     {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'})
   //
@@ -109,7 +116,7 @@ class Map extends React.Component {
       })
     }
 
-    this.heatmap.setMap(this.map)
+    this.heatmap.setMap(this.props.showBikes ? this.map : null)
     this.heatmap.set('radius', this.props.heatmapRadius)
     this.heatmap.setData(data)
   }
@@ -125,6 +132,9 @@ class Map extends React.Component {
       disableDefaultUI: true,
       styles: styles
     })
+
+    this.bikeLayer = new google.maps.BicyclingLayer()
+    this.bikeLayer.setMap(this.map)
 
     this.heatmap = null
 
@@ -151,7 +161,7 @@ class Map extends React.Component {
     }),
 
     DataService.getAlerts(lat,lng,radius)
-    // .then(this.clusterData)
+    // .then(this.clusterData),
     .then(d => d.map(point => this.mapPoint(explosion, false, this.props.showAccidents)(point)))
     .then(points => {
       this.alerts.forEach(r => {
@@ -169,11 +179,9 @@ class Map extends React.Component {
   }
 
   loadNewReports () {
-    console.log('Y U NO WORK')
     if (!this.isLoading) {
       DataService.getNewestUserReports(this.since)
       .then(d => {
-        console.log(d)
         d.forEach(point => {
           this.reports.push(this.mapPoint(userReport, true, this.props.showReports, true)(point))
         })

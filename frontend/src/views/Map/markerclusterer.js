@@ -1241,3 +1241,5 @@ ClusterIcon.prototype.createCss = function(pos) {
       txtSize + 'px; font-family:Arial,sans-serif; font-weight:bold');
   return style.join('');
 };
+
+window.MarkerCluster = MarkerClusterer

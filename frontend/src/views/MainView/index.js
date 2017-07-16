@@ -16,7 +16,8 @@ class MainView extends React.Component {
       heatmapRadius: 15,
       showBikes: true,
       showAccidents: true,
-      showReports: true
+      showReports: true,
+      showBikeRoads: true
     }
 
     this.toggleFilters = this.toggleFilters.bind(this)
@@ -25,6 +26,7 @@ class MainView extends React.Component {
     this.changeShowAccidents = this.changeShowAccidents.bind(this)
     this.changeShowReports =this.changeShowReports.bind(this)
     this.onLoading = this.onLoading.bind(this)
+    this.changeShowBikeRoads = this.changeShowBikeRoads.bind(this)
   }
 
   toggleFilters () {
@@ -63,15 +65,53 @@ class MainView extends React.Component {
     })
   }
 
+  changeShowBikeRoads () {
+    this.setState({
+      showBikeRoads: !this.state.showBikeRoads
+    })
+  }
+
 
   render () {
     return <div className='full-container'>
       <Sidebar className='pointer-enable' as={Menu} animation='overlay' width='wide' visible={this.state.filtersOpen} icon='labeled' vertical inverted>
-        <Menu.Item><Radio toggle onChange={this.changeShowBikes} checked={this.state.showBikes} /> Bikes Layer</Menu.Item>
-        <Menu.Item><Radio toggle onChange={this.changeShowAccidents} checked={this.state.showAccidents} /> Accidents</Menu.Item>
-        <Menu.Item><Radio toggle onChange={this.changeShowReports} checked={this.state.showReports} /> User Requests</Menu.Item>
         <Menu.Item>
-          <input type='range' min='1' max='100' value={this.state.heatmapRadius} onChange={this.changeRadius} />
+          <Grid>
+            <Grid.Column width={4}>
+              <Radio toggle onChange={this.changeShowAccidents} checked={this.state.showAccidents} />
+            </Grid.Column>
+            <Grid.Column width={12}>Accidents</Grid.Column>
+          </Grid>
+        </Menu.Item>
+        <Menu.Item>
+          <Grid>
+            <Grid.Column width={4}><Radio toggle onChange={this.changeShowReports} checked={this.state.showReports} /></Grid.Column>
+            <Grid.Column width={12}>User Requests</Grid.Column>
+          </Grid>
+        </Menu.Item>
+        <Menu.Item>
+          <Grid>
+            <Grid.Column width={4}>
+              <Radio toggle onChange={this.changeShowBikes} checked={this.state.showBikes} />
+            </Grid.Column>
+            <Grid.Column width={12}>
+              Bikers Layer
+            </Grid.Column>
+          </Grid></Menu.Item>
+        <Menu.Item>
+          <Grid>
+            <Grid.Column width={4}>
+              <Radio toggle onChange={this.changeShowBikeRoads} checked={this.state.showBikeRoads} />
+            </Grid.Column>
+            <Grid.Column width={12}>
+              Current Bike Roads Layer
+            </Grid.Column>
+          </Grid></Menu.Item>
+        <Menu.Item>
+          <Grid>
+            <Grid.Column width={6}>Radius</Grid.Column>
+            <Grid.Column width={10}><input type='range' min='1' max='100' value={this.state.heatmapRadius} onChange={this.changeRadius} /></Grid.Column>
+          </Grid>
         </Menu.Item>
       </Sidebar>
       <Map
@@ -79,6 +119,7 @@ class MainView extends React.Component {
         showBikes={this.state.showBikes}
         showAccidents={this.state.showAccidents}
         showReports={this.state.showReports}
+        showBikeRoads={this.state.showBikeRoads}
         onLoad={this.onLoading}
       />
       <div className='overlay'>
