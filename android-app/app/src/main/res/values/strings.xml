@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Allegro Tech Days</string>
     <string name="title_activity_google_maps">Map</string>
+    <string name="title_report_problem">Zgłoś problem</string>
+    <string name="report_cause_no_bike_lane">Brak ścieżki rowerowej</string>
+    <string name="report_cause_accident">Wypadek</string>
+    <string name="report_cause_other">Inny</string>
+    <string name="report_description_hint">Opis zgłoszenia</string>
 </resources>

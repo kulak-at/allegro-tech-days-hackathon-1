@@ -29,13 +29,58 @@
         android:layout_alignParentEnd="true"
         android:src="@drawable/ic_add_location"/>
 
-    <View
+    <LinearLayout
         android:id="@+id/map_bottom_view"
         android:layout_width="match_parent"
         android:layout_height="250dp"
+        android:padding="16dp"
         android:layout_alignParentBottom="true"
         android:background="@android:color/white"
-        android:visibility="invisible"/>
+        android:visibility="invisible"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="@string/title_report_problem"
+            android:textAppearance="@android:style/TextAppearance.Material.Large"/>
+
+        <RadioGroup
+            android:id="@+id/map_report_radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:orientation="vertical">
+
+            <RadioButton
+                android:id="@+id/radio_no_bike_lane"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/report_cause_no_bike_lane"/>
+
+            <RadioButton
+                android:id="@+id/radio_accident"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/report_cause_accident"/>
+
+            <RadioButton
+                android:id="@+id/radio_other"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/report_cause_other"/>
+
+        </RadioGroup>
+
+        <EditText
+            android:id="@+id/map_report_description"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="80dp"
+            android:hint="@string/report_description_hint"/>
+
+    </LinearLayout>
 
     <FrameLayout
         android:id="@+id/map_fragment_holder"
