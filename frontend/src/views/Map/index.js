@@ -1,5 +1,6 @@
 import React from 'react'
 import './Map.less'
+import './markerclusterer'
 
 import styles from './styles'
 
@@ -13,6 +14,7 @@ class Map extends React.Component {
   constructor () {
     super()
     this.makeHeatmap = this.makeHeatmap.bind(this)
+    // this.clusterData = this.clusterData.bind(this)
   }
 
   render () {
@@ -42,24 +44,52 @@ class Map extends React.Component {
 
   }
 
-  mapPoint(pointFile) {
+  // clusterData (data) {
+  //   data = data.map(d => ({lng: d.location.coordinates[0], lat: d.location.coordinates[1]}))
+  //   const markerCluster = new MarkerCluster(this.map, data,
+  //     {imagePath: 'https://developers.google.com/maps/documentation/javascript/examples/markerclusterer/m'})
+  //
+  // }
+
+  mapPoint(pointFile, withInfoWindow) {
     return (point) => {
-      console.log(point)
-      return new google.maps.Marker({
+      console.log('POINT', point)
+      const p = new google.maps.Marker({
         position: {
-          lat: point.location.coordinates[0],
-          lng: point.location.coordinates[1]
+          lat: parseFloat(point.location.coordinates[1]),
+          lng: parseFloat(point.location.coordinates[0])
         },
         map: this.map,
         // label: point.description,
         icon: pointFile
       })
+
+      if (!withInfoWindow) {
+        return p
+      }
+
+      const infowindow = new google.maps.InfoWindow({
+        content: '<h2>Reason: ' + point.reason + '</h2>' + '<p>' + point.description + '</p>'
+      })
+
+      let isOpen = false
+
+      p.addListener('click', function() {
+        if (isOpen) {
+          infowindow.close()
+        } else {
+          infowindow.open(this.map, p)
+        }
+        isOpen = !isOpen
+      }.bind(this))
+
+      return p
     }
   }
 
   makeHeatmap (data) {
     console.log('MAKE HEATMAP', data)
-    data = data.map(d => new google.maps.LatLng(d.location.coordinates[0], d.location.coordinates[1]))
+    data = data.map(d => new google.maps.LatLng(d.location.coordinates[1], d.location.coordinates[0]))
     this.heatmap = new google.maps.visualization.HeatmapLayer({
       data: data
     })
@@ -79,20 +109,22 @@ class Map extends React.Component {
     })
 
     DataService.getUserReports()
-    .map(this.mapPoint(userReport))
+    .then(d => d.map(point => this.mapPoint(userReport, true)(point)))
     .then(points => {
       console.log('P', points)
       this.reports = points
     })
 
     DataService.getAlerts()
-    .map(this.mapPoint(explosion))
+    // .then(this.clusterData)
+    .then(d => d.map(point => this.mapPoint(explosion)(point)))
     .then(points => {
       this.alerts = points
     })
 
     DataService.getBikeData()
     .then(this.makeHeatmap)
+
 
   }
 }
