@@ -9,7 +9,7 @@ import DataService from '../../service/DataService'
 import userReport from './user_report.png'
 import explosion from './explosion.png'
 
-const RADIUS = 4000
+let RADIUS = 4000
 
 class Map extends React.Component {
 
@@ -56,6 +56,19 @@ class Map extends React.Component {
       this.bikeLayer.setMap(newProps.showBikeRoads ? this.map : null)
     }
 
+  }
+
+  computeRadius() {
+    const bounds = this.map.getBounds()
+    const center = this.map.getCenter()
+    if (bounds && center) {
+      const ne = bounds.getNorthEast()
+      const distance = google.maps.geometry.spherical.computeDistanceBetween(center, ne)
+      console.log('DISTANCE', distance)
+      return distance
+    } else {
+      return 4000
+    }
   }
 
   // clusterData (data) {
@@ -139,7 +152,20 @@ class Map extends React.Component {
     this.heatmap = null
 
     this.map.addListener('dragend', function() {
+      if (this.isLoading) {
+        return
+      }
       const p = this.map.getCenter()
+      RADIUS = this.computeRadius()
+      this.refreshUserData(p.lat(), p.lng(), RADIUS)
+    }.bind(this))
+
+    this.map.addListener('zoom_changed', function() {
+      if (this.isLoading) {
+        return
+      }
+      const p = this.map.getCenter()
+      RADIUS = this.computeRadius()
       this.refreshUserData(p.lat(), p.lng(), RADIUS)
     }.bind(this))
 
