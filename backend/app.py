@@ -58,7 +58,7 @@ def getBikeCoords():
     return json.dumps(coords, default=json_util.default)
 
 
-@app.route('/accidents',methods=['GET'])
+@app.route('/accidents', methods=['GET'])
 def getAccidents():
     accs = [a for a in accidentsCollection.find(buildGeoQuery(request))]
     return json.dumps(accs, default=json_util.default)
@@ -66,14 +66,14 @@ def getAccidents():
 
 def buildGeoQuery(request):
     params = request.args.to_dict()
-    lat = float(params.get('lat'))
-    lng = float(params.get('lng'))
-    rad = float(params.get('radius'))
-    query=''
+    lat = params.get('lat')
+    lng = params.get('lng')
+    rad = params.get('radius')
+    query = {}
     if lat is None or lng is None or rad is None:
         pass
     else:
-        query = {'location': {'$nearSphere': {'$geometry': {'type': 'Point', 'coordinates': [lng, lat]}, '$maxDistance': rad}}}
+        query = {'location': {'$nearSphere': {'$geometry': {'type': 'Point', 'coordinates': [float(lng), float(lat)]}, '$maxDistance': float(rad)}}}
     return query
 
 
