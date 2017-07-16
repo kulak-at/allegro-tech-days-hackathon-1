@@ -1,18 +1,22 @@
 package tech.allegro.allegrotechdays.activity
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.support.design.widget.FloatingActionButton
+import android.view.View
+import android.view.ViewAnimationUtils
 import android.widget.FrameLayout
+import android.widget.ImageView
 import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.places.Places
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import tech.allegro.allegrotechdays.R
 import tech.allegro.allegrotechdays.extensions.bindView
 import tech.allegro.allegrotechdays.inject.component.ApplicationComponent
@@ -23,9 +27,18 @@ class MapActivity : InjectableBaseActivity<ApplicationComponent>(), OnMapReadyCa
 
     val addReportButton: FloatingActionButton by bindView(R.id.map_fab_add_report)
     val fragmentHolder: FrameLayout by bindView(R.id.map_fragment_holder)
+    val locationMarker: ImageView by bindView(R.id.map_location_marker)
+    val bottomView: View by bindView(R.id.map_bottom_view)
 
     private lateinit var googleApiClient: GoogleApiClient
     private lateinit var googleMap: GoogleMap
+
+    private val markerAnimationDuration = 150L
+    private val markerAnimationOffset = 30f
+
+    private var isReportPanelShowing = false
+
+    private val ezoterycznyPoznań = LatLng(52.406374, 16.925168)
 
     override val component: ApplicationComponent
         get() = app.applicationComponent
@@ -38,6 +51,38 @@ class MapActivity : InjectableBaseActivity<ApplicationComponent>(), OnMapReadyCa
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_map)
 
+        addReportButton.setOnClickListener {
+            startCircularRevealAnimation(!isReportPanelShowing)
+        }
+
+        initGoogleApiClient()
+    }
+
+    override fun onConnected(connectionHint: Bundle?) {
+        val mapFragment = supportFragmentManager
+                .findFragmentById(R.id.map_fragment_map) as SupportMapFragment
+        mapFragment.getMapAsync(this)
+    }
+
+    override fun onConnectionSuspended(cause: Int) { }
+
+    override fun onConnectionFailed(result: ConnectionResult) { }
+
+    override fun onMapReady(map: GoogleMap) {
+        googleMap = map
+        googleMap.setMyLocationEnabled(true)
+        googleMap.getUiSettings().setMyLocationButtonEnabled(true)
+
+        googleMap.setOnCameraMoveStartedListener {
+            locationMarker.animateUp()
+        }
+
+        googleMap.setOnCameraIdleListener {
+            locationMarker.animateDown()
+        }
+    }
+
+    private fun initGoogleApiClient() {
         googleApiClient = GoogleApiClient.Builder(this)
                 .enableAutoManage(this, this)
                 .addConnectionCallbacks(this)
@@ -49,28 +94,57 @@ class MapActivity : InjectableBaseActivity<ApplicationComponent>(), OnMapReadyCa
         googleApiClient.connect()
     }
 
-    override fun onConnected(connectionHint: Bundle?) {
-        val mapFragment = supportFragmentManager
-                .findFragmentById(R.id.map_fragment_map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
+    private fun calculateRevealAnimationCenter(): Pair<Int, Int> {
+        val fabMargin = resources.getDimension(R.dimen.fab_add_report_margin)
+        val fabSize = resources.getDimension(R.dimen.fab_add_report_size)
+
+        val x = (bottomView.width - (fabMargin + (fabSize / 2))).toInt()
+        val y = (bottomView.height - (fabMargin + (fabSize / 2))).toInt()
+
+        return Pair(x, y)
     }
 
-    override fun onConnectionSuspended(cause: Int) {
+    private fun startCircularRevealAnimation(enter: Boolean) {
+        val animCenter = calculateRevealAnimationCenter()
+        val radius = Math.hypot(animCenter.first.toDouble(), animCenter.second.toDouble()).toFloat()
 
+        val anim = if (enter) {
+            ViewAnimationUtils.createCircularReveal(bottomView, animCenter.first, animCenter.second, 0f, radius)
+        } else {
+            ViewAnimationUtils.createCircularReveal(bottomView, animCenter.first, animCenter.second, radius, 0f)
+        }
+
+        anim.addListener(object : AnimatorListenerAdapter() {
+            override fun onAnimationEnd(animation: Animator?) {
+                super.onAnimationEnd(animation)
+
+                if (enter) {
+                    isReportPanelShowing = true
+                    addReportButton.setImageDrawable(resources.getDrawable(R.drawable.ic_check))
+                } else {
+                    addReportButton.setImageDrawable(resources.getDrawable(R.drawable.ic_add_location))
+                    bottomView.visibility = View.INVISIBLE
+                    isReportPanelShowing = false
+                }
+            }
+        })
+
+        if (enter) {
+            bottomView.visibility = View.VISIBLE
+        }
+
+        anim.start()
     }
 
-    override fun onConnectionFailed(result: ConnectionResult) {
-
+    private fun ImageView.animateDown() {
+        val animation = ObjectAnimator.ofFloat(locationMarker, "translationY", markerAnimationOffset)
+        animation.duration = markerAnimationDuration
+        animation.start()
     }
 
-    override fun onMapReady(map: GoogleMap) {
-        googleMap = map
-
-        googleMap.setMyLocationEnabled(true)
-        googleMap.getUiSettings().setMyLocationButtonEnabled(true)
-
-        val ezoterycznyPoznań = LatLng(52.406374, 16.925168)
-        googleMap.addMarker(MarkerOptions().position(ezoterycznyPoznań).title("Ezoteryczny Poznań"))
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(ezoterycznyPoznań))
+    private fun ImageView.animateUp() {
+        val animation = ObjectAnimator.ofFloat(this, "translationY", -markerAnimationOffset)
+        animation.duration = markerAnimationDuration
+        animation.start()
     }
 }

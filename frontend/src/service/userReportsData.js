@@ -4,7 +4,7 @@ export default [
     description: 'I need a bike lane here!',
     location: {
       type: 'Point',
-      coordinates: [52.399102, 16.876654]
+      coordinates: [16.876654, 52.399102]
     }
   },
   {
@@ -12,7 +12,7 @@ export default [
     description: 'I need a bike lane here!',
     location: {
       type: 'Point',
-      coordinates: [52.400594, 16.872534]
+      coordinates: [16.872534, 52.400594]
     }
   },
   {
@@ -20,7 +20,7 @@ export default [
     description: 'I need a bike lane here!',
     location: {
       type: 'Point',
-      coordinates: [52.396012, 16.880473]
+      coordinates: [16.880473, 52.396012]
     }
   }
 ]

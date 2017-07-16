@@ -3,21 +3,21 @@ export default [
     name: 'Car Crash',
     location: {
       type: 'Point',
-      coordinates: [52.397661, 16.866655]
+      coordinates: [16.866655, 52.397661]
     }
   },
   {
     name: 'Car Crash',
     location: {
       type: 'Point',
-      coordinates: [52.401458, 16.881589]
+      coordinates: [16.881589, 52.401458]
     }
   },
   {
     name: 'Two bikes crashed',
     location: {
       type: 'Point',
-      coordinates: [52.393236, 16.885967]
+      coordinates: [16.885967, 52.393236]
     }
   }
 ]

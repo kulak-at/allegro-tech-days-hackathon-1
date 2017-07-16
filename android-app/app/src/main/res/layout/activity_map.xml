@@ -13,6 +13,13 @@
         android:layout_height="match_parent"
         android:name="com.google.android.gms.maps.SupportMapFragment"/>
 
+    <ImageView
+        android:id="@+id/map_location_marker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:src="@drawable/ic_location_marker"/>
+
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/map_fab_add_report"
         android:layout_width="@dimen/fab_add_report_size"
@@ -21,6 +28,14 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:src="@drawable/ic_add_location"/>
+
+    <View
+        android:id="@+id/map_bottom_view"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_alignParentBottom="true"
+        android:background="@android:color/white"
+        android:visibility="invisible"/>
 
     <FrameLayout
         android:id="@+id/map_fragment_holder"
