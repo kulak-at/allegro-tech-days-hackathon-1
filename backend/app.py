@@ -12,11 +12,13 @@ userReportCollection = client.user_report
 bikeCoordCollection = client.coords
 accidentsCollection = client.accidents
 
+
 @app.route('/')
 def hello_world():
     return 'xyz'
     # return str(userReportCollection.insert_one(exampleReport).inserted_id)
     # return 'done'
+
 
 @app.route('/user-report', methods=['POST'])
 def addUserReport():
@@ -34,11 +36,12 @@ def addUserReport():
     return 'added'
 # get all the documents from the collection
 
+
 @app.route('/user-report', methods=['GET'])
 def getReports():
-    # reports = [1,2,3]
-    reports = [report for report in userReportCollection.find()]
+    reports = [report for report in userReportCollection.find(buildGeoQuery(request))]
     return json.dumps(reports, default=json_util.default)
+
 
 @app.route('/new-user-report', methods=['GET'])
 def getLatest():
@@ -48,26 +51,30 @@ def getLatest():
     latest_reports = [reps for reps in userReportCollection.find({'createdAt': {'$gt': dt}})]
     return json.dumps(latest_reports, default=json_util.default)
 
+
 @app.route('/bike-coords', methods=['GET'])
 def getBikeCoords():
-    params = request.args.to_dict()
-    lat = float(params.get('lat'))
-    lng = float(params.get('lng'))
-    rad = float(params.get('radius'))
-
-    query = {'location': {'$nearSphere': {'$geometry': {'type': 'Point', 'coordinates': [lng, lat]}, '$maxDistance': rad}}}
-
-    coords = []
-    if lat is None or lng is None or rad is None:
-        coords = [coord for coord in bikeCoordCollection.find()]
-    else:
-        coords = [coord for coord in bikeCoordCollection.find(query)]
+    coords = [coord for coord in bikeCoordCollection.find(buildGeoQuery(request))]
     return json.dumps(coords, default=json_util.default)
 
-@app.route('/accidents',methods=['GET'])
+
+@app.route('/accidents', methods=['GET'])
 def getAccidents():
-    accs = [a for a in accidentsCollection.find()]
+    accs = [a for a in accidentsCollection.find(buildGeoQuery(request))]
     return json.dumps(accs, default=json_util.default)
+
+
+def buildGeoQuery(request):
+    params = request.args.to_dict()
+    lat = params.get('lat')
+    lng = params.get('lng')
+    rad = params.get('radius')
+    query = {}
+    if lat is None or lng is None or rad is None:
+        pass
+    else:
+        query = {'location': {'$nearSphere': {'$geometry': {'type': 'Point', 'coordinates': [float(lng), float(lat)]}, '$maxDistance': float(rad)}}}
+    return query
 
 
 if __name__ == '__main__':
