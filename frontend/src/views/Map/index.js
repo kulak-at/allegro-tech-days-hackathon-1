@@ -9,12 +9,23 @@ import DataService from '../../service/DataService'
 import userReport from './user_report.png'
 import explosion from './explosion.png'
 
+const RADIUS = 4000
+
 class Map extends React.Component {
 
   constructor () {
     super()
     this.makeHeatmap = this.makeHeatmap.bind(this)
     // this.clusterData = this.clusterData.bind(this)
+    this.reports = []
+    this.alerts = []
+    this.heatmap = null
+    this.since = (new Date()).toISOString()
+    this.isLoading = false
+
+
+    this.loadNewReports = this.loadNewReports.bind(this)
+
   }
 
   render () {
@@ -31,7 +42,6 @@ class Map extends React.Component {
 
     if (this.reports && this.props.showReports !== newProps.showReports) {
       this.reports.forEach(report => {
-        console.log('report', report)
         report.setMap(newProps.showReports ? this.map : null)
       })
     }
@@ -51,15 +61,15 @@ class Map extends React.Component {
   //
   // }
 
-  mapPoint(pointFile, withInfoWindow) {
+  mapPoint(pointFile, withInfoWindow, isVisible, animate) {
     return (point) => {
-      console.log('POINT', point)
       const p = new google.maps.Marker({
         position: {
           lat: parseFloat(point.location.coordinates[1]),
           lng: parseFloat(point.location.coordinates[0])
         },
-        map: this.map,
+        map: isVisible ? this.map : null,
+        animation: animate ? google.maps.Animation.DROP : null,
         // label: point.description,
         icon: pointFile
       })
@@ -88,45 +98,94 @@ class Map extends React.Component {
   }
 
   makeHeatmap (data) {
-    console.log('MAKE HEATMAP', data)
     data = data.map(d => new google.maps.LatLng(d.location.coordinates[1], d.location.coordinates[0]))
-    this.heatmap = new google.maps.visualization.HeatmapLayer({
-      data: data
-    })
+    // this.heatmap = new google.maps.visualization.HeatmapLayer({
+    //   data: data
+    // })
+
+    if (!this.heatmap) {
+      this.heatmap = new google.maps.visualization.HeatmapLayer({
+        data: data
+      })
+    }
 
     this.heatmap.setMap(this.map)
     this.heatmap.set('radius', this.props.heatmapRadius)
+    this.heatmap.setData(data)
   }
 
   componentDidMount () {
-    console.log('Component did mount')
-    console.log(this)
+
+    const lat = 52.3919131
+    const lng = 16.8580715
+
     this.map = new google.maps.Map(this.refs.map, {
-      center: {lat: 52.3919131, lng: 16.8580715},
+      center: {lat: lat, lng: lng},
       zoom: 14,
       disableDefaultUI: true,
       styles: styles
     })
 
-    DataService.getUserReports()
-    .then(d => d.map(point => this.mapPoint(userReport, true)(point)))
+    this.heatmap = null
+
+    this.map.addListener('dragend', function() {
+      const p = this.map.getCenter()
+      this.refreshUserData(p.lat(), p.lng(), RADIUS)
+    }.bind(this))
+
+    this.refreshUserData(lat, lng, RADIUS)
+    this.loadNewReports()
+  }
+
+  refreshUserData (lat, lng, radius) {
+    this.props.onLoad(true)
+    this.isLoading = true
+    Promise.all([DataService.getUserReports(lat,lng,radius)
+    .then(d => d.map(point => this.mapPoint(userReport, true, this.props.showReports)(point)))
     .then(points => {
-      console.log('P', points)
+      this.since = (new Date()).toISOString()
+      this.reports.forEach(r => {
+        r.setMap(null)
+      })
       this.reports = points
-    })
+    }),
 
-    DataService.getAlerts()
+    DataService.getAlerts(lat,lng,radius)
     // .then(this.clusterData)
-    .then(d => d.map(point => this.mapPoint(explosion)(point)))
+    .then(d => d.map(point => this.mapPoint(explosion, false, this.props.showAccidents)(point)))
     .then(points => {
+      this.alerts.forEach(r => {
+        r.setMap(null)
+      })
       this.alerts = points
+    }),
+
+    DataService.getBikeData(lat,lng,radius)
+    .then(this.makeHeatmap)])
+    .then(() => {
+      this.props.onLoad(false)
+      this.isLoading = false
     })
+  }
 
-    DataService.getBikeData()
-    .then(this.makeHeatmap)
-
+  loadNewReports () {
+    console.log('Y U NO WORK')
+    if (!this.isLoading) {
+      DataService.getNewestUserReports(this.since)
+      .then(d => {
+        console.log(d)
+        d.forEach(point => {
+          this.reports.push(this.mapPoint(userReport, true, this.props.showReports, true)(point))
+        })
+        this.since = (new Date()).toISOString()
+        setTimeout(this.loadNewReports, 5000)
+      })
+    } else {
+      setTimeout(this.loadNewReports, 5000)
+    }
 
   }
+
 }
 
 export default Map

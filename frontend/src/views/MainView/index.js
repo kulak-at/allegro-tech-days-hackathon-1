@@ -1,6 +1,6 @@
 import React from 'react'
 
-import { Grid, Menu, Sidebar, Segment, Icon, Container, Button, Radio } from 'semantic-ui-react'
+import { Grid, Menu, Sidebar, Segment, Icon, Container, Button, Radio, Loader, Dimmer } from 'semantic-ui-react'
 import Map from '../Map'
 
 import Slider from 'react-slider'
@@ -24,6 +24,7 @@ class MainView extends React.Component {
     this.changeShowBikes = this.changeShowBikes.bind(this)
     this.changeShowAccidents = this.changeShowAccidents.bind(this)
     this.changeShowReports =this.changeShowReports.bind(this)
+    this.onLoading = this.onLoading.bind(this)
   }
 
   toggleFilters () {
@@ -56,6 +57,12 @@ class MainView extends React.Component {
     })
   }
 
+  onLoading (isLoading) {
+    this.setState({
+      isLoading: isLoading
+    })
+  }
+
 
   render () {
     return <div className='full-container'>
@@ -72,8 +79,12 @@ class MainView extends React.Component {
         showBikes={this.state.showBikes}
         showAccidents={this.state.showAccidents}
         showReports={this.state.showReports}
+        onLoad={this.onLoading}
       />
       <div className='overlay'>
+        <Dimmer active={this.state.isLoading}>
+          <Loader />
+        </Dimmer>
         <Button primary circular icon='settings' floated='left' onClick={this.toggleFilters} />
       </div>
       </div>

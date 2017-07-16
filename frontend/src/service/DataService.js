@@ -6,20 +6,48 @@ import axios from 'axios'
 import Promise from 'bluebird'
 
 class DataService {
-  static getUserReports () {
-    return axios.get('/api/user-report')
+  static getUserReports (lat, lng, radius) {
+    return axios.get('/api/user-report', {
+      params: {
+        lat: lat,
+        lng: lng,
+        radius: radius
+      }
+    })
     .then(d => d.data)
   }
 
-  static getAlerts () {
-    return axios.get('/api/accidents')
+  static getAlerts (lat, lng, radius) {
+    return axios.get('/api/accidents', {
+      params: {
+        lat: lat,
+        lng: lng,
+        radius: radius
+      }
+    })
     .then(d => d.data)
   }
 
-  static getBikeData () {
-    return axios.get('/api/bike-coords')
+  static getBikeData (lat, lng, radius) {
+    return axios.get('/api/bike-coords', {
+      params: {
+        lat: lat,
+        lng: lng,
+        radius: radius
+      }
+    })
     .then(d => d.data)
   }
+
+  static getNewestUserReports (since) {
+    return axios.get('/api/new-user-report', {
+      params: {
+        since: since
+      }
+    })
+    .then(d => d.data)
+  }
+
 }
 
 export default DataService
