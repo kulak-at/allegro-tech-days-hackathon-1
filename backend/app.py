@@ -8,6 +8,7 @@ from dateutil import parser
 client = MongoClient('mongodb://mongo:27017').bike_database
 userReportCollection = client.user_report
 bikeCoordCollection = client.coords
+accidentsCollection = client.accidents
 
 @app.route('/')
 def hello_world():
@@ -49,6 +50,12 @@ def getLatest():
 def getBikeCoords():
     coords = [coord for coord in bikeCoordCollection.find()]
     return json.dumps(coords, default=json_util.default)
+
+@app.route('/accidents',methods=['GET'])
+def getAccidents():
+    accs = [a for a in accidentsCollection.find()]
+    return json.dumps(accs, default=json_util.default)
+
 
 if __name__ == '__main__':
     app.run(debug=True,host='0.0.0.0')
